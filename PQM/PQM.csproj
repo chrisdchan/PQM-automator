@@ -107,7 +107,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\Patient.cs" />
+    <Compile Include="Models\CanvasGraph.cs" />
     <Compile Include="Models\Structure.cs" />
     <Compile Include="Models\Graph.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

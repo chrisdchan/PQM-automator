@@ -39,8 +39,12 @@ namespace PQM
         private double xmin = 0;
         private double xmax = 100;
 
+        public static Grid grid { get; set; }
+        
         public Func<double, string> Formatter { get; set; }
         public string[] Labels { get; set; }
+
+        public CanvasGraph canvasGraph;
 
         public MainWindow()
         {
@@ -50,6 +54,15 @@ namespace PQM
             setVisibiilityStructMetrics(false);
 
             DataContext = this;
+            grid = mainGrid;
+
+            canvasGraph = new CanvasGraph();
+
+            Loaded += delegate
+            {
+                canvasGraph.addTest();
+            };
+
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
