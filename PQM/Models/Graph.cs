@@ -29,7 +29,6 @@ namespace PQM.Models
 
             setColors();
             structureIDTable = setDict();
-            setAllSeries();
 
             maxX = 0;
             foreach(Structure s in structures)
@@ -63,29 +62,7 @@ namespace PQM.Models
 
             setColors();
             structureIDTable = setDict();
-            setAllSeries();
         }
-
-        private void setAllSeries()
-        {
-            allSeries = new SeriesCollection();
-            foreach(Structure structure in structures)
-            {
-                allSeries.Add(new LineSeries
-                {
-                    Configuration = new CartesianMapper<Point>()
-                        .X(point => point.X)
-                        .Y(point => point.Y),
-                    Title = structure.name,
-                    Values = structure.getCurve(0, 100),
-                    PointGeometrySize = 1,
-                    LineSmoothness = 0,
-                    Stroke = structure.color,
-                    Fill = System.Windows.Media.Brushes.Transparent
-                });
-            }
-        }
-
 
         private Dictionary<string, int> setDict()
         {

@@ -60,7 +60,7 @@ namespace PQM
 
             Loaded += delegate
             {
-                canvasGraph.addTest();
+                canvasGraph.setHeightandWidth();
             };
 
         }
@@ -156,23 +156,6 @@ namespace PQM
         private void plotGraph(Graph graph)
         {
             removeAllSeries();
-
-
-            foreach(Structure structure in graph.structures)
-            {
-                SeriesCollection.Add(new LineSeries
-                {
-                    Configuration = new CartesianMapper<Point>()
-                        .X(point => point.X)
-                        .Y(point => point.Y),
-                    Title = structure.name,
-                    Values = structure.getCurve(0, graph.maxX),
-                    PointGeometrySize = 1,
-                    LineSmoothness = 0,
-                    Stroke = structure.color,
-                    Fill = System.Windows.Media.Brushes.Transparent
-                });
-            }
 
             Labels = new string[] { "1", "2", "3" };
             Formatter = value => value.ToString("N");

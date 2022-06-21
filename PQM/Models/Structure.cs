@@ -33,7 +33,7 @@ namespace PQM.Models
             
         public double maxX { get; set; }
 
-        public ChartValues<ObservablePoint> curve { get; }
+        public List<Point> curve { get; }
 
         public List<double> xRaw { get; set; } // All data points
         public List<double> yRaw { get; set; } // All data points
@@ -53,7 +53,7 @@ namespace PQM.Models
                 // default case of nothing happens
                 numSplines = 0;
                 rawPoints = new Point[0];
-                curve = new ChartValues<ObservablePoint>();
+                curve = new List<Point>();
                 coefficients = new double[0];
                 splineTypes = new int[0];
 
@@ -641,17 +641,14 @@ namespace PQM.Models
             return points;
         }
 
-        private ChartValues<ObservablePoint> initCurve()
+        private List<Point> initCurve()
         {
-            ChartValues<ObservablePoint> points = new ChartValues<ObservablePoint>();
+            List<Point> points = new List<Point>();
 
             for(int i = 0; i < numSplines - 1; i++)
             {
-
                 double delta = getDelta(i);
                 double width = rawPoints[i + 1].X - rawPoints[i].X;
-
-
 
                 int graphN;
 
@@ -681,7 +678,7 @@ namespace PQM.Models
                 {
                     y = interpolate(x);
                     
-                    points.Add(new ObservablePoint(x, y));
+                    points.Add(new Point(x, y));
 
                     x += dx;
                 }
@@ -707,18 +704,18 @@ namespace PQM.Models
             return R;
         }
 
-        public ChartValues<ObservablePoint> getCurve(double min, double max)
+        public List<Point> getCurve(double min, double max)
         {
-            if (numSplines == 0) return new ChartValues<ObservablePoint>();
+            if (numSplines == 0) return new List<Point>();
 
             if(min < rawPoints[0].X || max > rawPoints[numSplines - 1].X || max < min)
             {
                 throw new Exception("Error: min or max X value out of range");
             }
 
-            ChartValues<ObservablePoint> chart = new ChartValues<ObservablePoint>();
+            List<Point> chart = new List<Point>();
 
-            foreach(ObservablePoint p in curve)
+            foreach(Point p in curve)
             {
                 if (p.X < min) continue;
                 if (p.X > max) break;

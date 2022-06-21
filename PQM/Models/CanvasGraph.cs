@@ -14,24 +14,26 @@ namespace PQM.Models
     public class CanvasGraph
     {
         public Canvas canvas { get; set; }
+        private double canvasHeight { get; set; }
+        private double canvasWidth { get; set; }
 
-        private double graphHeight { get; set; }
-        private double graphWidth { get; set; }
+
+        private const double START_GRAPH_X = 20;
+        private const double START_GRAPH_Y = 40;
+
+
+        private List<List<Line>> curves { get; set; }
 
         public CanvasGraph()
         {
             canvas = new Canvas();
-            add();
+            curves = new List<List<Line>>();
             initCanvas();
         }
-
-        public void add()
-        {
-            MainWindow.grid.Children.Add(canvas);
-        }
-
         private void initCanvas()
         {
+            MainWindow.grid.Children.Add(canvas);
+
             Grid.SetRow(canvas, 2);
             Grid.SetColumn(canvas, 1);
             Grid.SetRowSpan(canvas, 2);
@@ -39,27 +41,34 @@ namespace PQM.Models
 
             canvas.Background = new SolidColorBrush(Colors.White);
         }
-        public void addTest()
+
+        public void setHeightandWidth()
         {
-            Line line = new Line();
-            line.X1 = 0;
-            line.X2 = canvas.ActualWidth;
-            line.Y1 = 0;
-            line.Y2 = canvas.ActualHeight;
-            line.Stroke = new SolidColorBrush(Colors.Red);
-            line.StrokeThickness = 1;
-            canvas.Children.Add(line);
-
-            Rectangle rect = new Rectangle();
-            rect.Fill = new SolidColorBrush(Colors.Black);
-            rect.Width = 20;
-            rect.Height = 10;
-            canvas.Children.Add(rect);
-            Canvas.SetLeft(rect, 20);
-            Canvas.SetRight(rect, 25);
-
+            canvasHeight = canvas.ActualHeight;
+            canvasWidth = canvas.ActualWidth;
         }
 
-        
+        public void graph(Graph graph)
+        {
+        }
+
+        private void initStructureCurve(Structure structure)
+        {
+            List<Point> curve = structure.curve;
+            curves[structure.id] = new List<Line>();
+
+            for(int i = 0; i < curve.Count - 1; i++)
+            {
+                Line line = new Line();
+                line.X1 = curve[i].X;
+                line.Y1 = curve[i].Y;
+                line.X2 = curve[i].X;
+                line.Y2 = curve[i].Y;
+                line.Stroke = structure.color;
+                line.StrokeThickness = 1;
+                curves[structure.id].Add(line);
+                canvas.Children.Add(line);
+            }
+        }
     }
 }
