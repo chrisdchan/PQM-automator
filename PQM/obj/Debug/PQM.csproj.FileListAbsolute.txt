@@ -84,12 +84,10 @@ C:\Users\chris\Source\Repos\PQM-automator\PQM\bin\Debug\sv\Xceed.Wpf.AvalonDock.
 C:\Users\chris\Source\Repos\PQM-automator\PQM\bin\Debug\zh-Hans\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.csproj.AssemblyReference.cache
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.csproj.SuggestedBindingRedirects.cache
-C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\ChangeColor.g.cs
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\MainWindow.g.cs
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\App.g.cs
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM_MarkupCompile.cache
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM_MarkupCompile.lref
-C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\ChangeColor.baml
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\MainWindow.baml
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.g.resources
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.Properties.Resources.resources

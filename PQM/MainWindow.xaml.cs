@@ -46,8 +46,6 @@ namespace PQM
         {
             InitializeComponent();
             SeriesCollection = new SeriesCollection { };
-            liveChart.AxisX[0].Separator.StrokeThickness = 0;
-            liveChart.AxisY[0].Separator.StrokeThickness = 0;
 
             setVisibiilityStructMetrics(false);
 
@@ -145,7 +143,6 @@ namespace PQM
         private void plotGraph(Graph graph)
         {
             removeAllSeries();
-            liveChart.Visibility = Visibility.Visible;
 
 
             foreach(Structure structure in graph.structures)
@@ -195,7 +192,6 @@ namespace PQM
             }
 
             graphTitleLabel.Content = graphTitle;
-            liveChart.AxisX[0].Title = xtitle;
 
             setXMinTxt.Text = "0";
             setXMaxTxt.Text = graph.maxX.ToString();
@@ -217,8 +213,6 @@ namespace PQM
             {
                 xmin = minX;
                 xmax = maxX;
-                xAxis.MinValue = minX;
-                xAxis.MaxValue = maxX;
 
                 double range = xmax - xmin;
                 double freeSpace = myGraph.maxX - range;
@@ -538,8 +532,7 @@ namespace PQM
 
         private void exportBtn_Click(object sender, RoutedEventArgs e)
         {
-            liveChart.Visibility = Visibility.Visible;
-            SaveToPng(liveChart, "mychart.png");
+            System.Windows.MessageBox.Show("Yuh");
         }
 
         private void SaveToPng(FrameworkElement visual, string fileName)
@@ -606,8 +599,6 @@ namespace PQM
 
             double val = xPosSlider.Value;
 
-            xAxis.MinValue = freeSpace * (val / 100);
-            xAxis.MaxValue = freeSpace * (val / 100) + range;
 
         }
     }
