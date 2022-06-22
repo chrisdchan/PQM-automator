@@ -60,7 +60,7 @@ namespace PQM
 
             Loaded += delegate
             {
-                canvasGraph.setHeightandWidth();
+                canvasGraph.onLoad();
             };
 
         }
@@ -103,7 +103,7 @@ namespace PQM
                     i++;
                 }
                 myGraph = new Graph(metric, myStructures);
-                plotGraph(myGraph);
+                canvasGraph.plotGraph(myGraph);
             }
         }
 
@@ -140,7 +140,7 @@ namespace PQM
                         i++;
                     }
                     myGraph = new Graph(metric, myStructures);
-                    plotGraph(myGraph);
+                    canvasGraph.plotGraph(myGraph);
                 }
             }
         }
