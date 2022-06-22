@@ -222,14 +222,15 @@ namespace PQM
                     xPosSlider.Value = (minX / freeSpace) * 100;
                 }
 
+                canvasGraph.setDomain(xmin, xmax);
 
             }
             else
             {
                 System.Windows.MessageBox.Show("An Error Occured: Make sure values are numbers");
             }
-
         }
+        
         private void showRaw_Checked(object sender, RoutedEventArgs e)
         {
             setRawVisibility(true);
@@ -591,11 +592,7 @@ namespace PQM
         {
             double range = xmax - xmin;
             double freeSpace = myGraph.maxX - range;
-            
-
             double val = xPosSlider.Value;
-
-
         }
     }
 }

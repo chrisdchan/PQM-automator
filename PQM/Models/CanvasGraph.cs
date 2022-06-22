@@ -15,7 +15,8 @@ namespace PQM.Models
     {
         public Canvas canvas { get; set; }
 
-        private Line[][] curves { get; set; }
+        private Graph graph;
+        private Line[][] curves;
 
         private SolidColorBrush axesColor = new SolidColorBrush(Colors.Black);
 
@@ -68,11 +69,29 @@ namespace PQM.Models
             setAxesTicks();
         }
 
+        private void clearCurves()
+        {
+            if (curves == null) return;
+
+            for(int i = 0; i < curves.Length; i++)
+            {
+                for(int j = 0; j < curves[i].Length; j++)
+                {
+                    canvas.Children.Remove(curves[i][j]);
+                }
+            }
+        }
+
         public void plotGraph(Graph graph)
         {
-            xmin = 0;
-            xmax = graph.maxX;
-
+            this.graph = graph;
+            this.xmin = 0;
+            this.xmax = graph.maxX;
+            plotGraph();
+        }
+        private void plotGraph()
+        {
+            clearCurves();
             curves = new Line[graph.structures.Count][];
             
             foreach(Structure structure in graph.structures)
@@ -89,6 +108,13 @@ namespace PQM.Models
             mapYToGraph = (y) => (y * (TOP_Y - BOTTOM_Y)) / 100.0 + BOTTOM_Y;
         }
 
+        public void setDomain(double xmin, double xmax)
+        {
+            this.xmin = xmin;
+            this.xmax = xmax;
+            plotGraph();
+        }
+
         private void setAxesLines()
         {
             Line yaxes = createLine(LEFT_X, BOTTOM_Y, LEFT_X, TOP_Y, axesColor);
@@ -99,8 +125,8 @@ namespace PQM.Models
 
         private void setAxesTicks()
         {
-            double x = LEFT_X;
             double dx = (double) (RIGHT_X - LEFT_X) / NUM_XAXES_TICKS;
+            double x = LEFT_X + dx;
             for(int i = 0; i < NUM_XAXES_TICKS; i++)
             {
                 Line line = createLine(x, BOTTOM_Y, x, BOTTOM_Y - AXES_TICK_SIZE, axesColor);
@@ -108,8 +134,8 @@ namespace PQM.Models
                 x += dx;
             }
 
-            double y = BOTTOM_Y;
             double dy = (double)(TOP_Y - BOTTOM_Y) / NUM_YAXES_TICKS;
+            double y = BOTTOM_Y + dy;
             for(int i = 0; i < NUM_YAXES_TICKS; i++)
             {
                 Line line = createLine(LEFT_X, y, LEFT_X - AXES_TICK_SIZE, y, axesColor);
@@ -117,25 +143,37 @@ namespace PQM.Models
                 y += dy;
             }
         }
+
+        private int NUM_POINTS = 100;
+
         private void plotStructure(Structure structure)
         {
-            List<Point> curve = structure.curve;
-            curves[structure.id] = new Line[curve.Count];
+            double x1 = xmin;
+            double dx = (xmax - xmin) / NUM_POINTS;
+            double x2 = x1 + dx;
 
-            int minInd = indexOfXValue(xmin, curve);
-            int maxInd = indexOfXValue(xmax, curve);
+            double y1, y2;
 
-            for(int i = minInd; i < maxInd + 1; i++)
+            curves[structure.id] = new Line[NUM_POINTS - 1];
+
+            for(int i = 0; i < NUM_POINTS - 1; i++)
             {
+                y1 = structure.interpolate(x1);
+                y2 = structure.interpolate(x2);
+
                 Line line = new Line();
-                line.X1 = mapXToGraph(curve[i].X);
-                line.Y1 = mapYToGraph(curve[i].Y);
-                line.X2 = mapXToGraph(curve[i + 1].X);
-                line.Y2 = mapYToGraph(curve[i + 1].Y);
+                line.X1 = mapXToGraph(x1);
+                line.Y1 = mapYToGraph(y1);
+                line.X2 = mapXToGraph(x2);
+                line.Y2 = mapYToGraph(y2);
                 line.Stroke = structure.color;
-                line.StrokeThickness = 1;
+                line.StrokeThickness = 1.5;
                 curves[structure.id][i] = line;
                 canvas.Children.Add(line);
+
+                x1 = x2;
+                x2 = x2 + dx;
+
             }
         }
 
