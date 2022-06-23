@@ -29,12 +29,14 @@ namespace PQM.Models
         private double NUM_YAXES_TICKS = 10;
 
         private double AXES_TICK_SIZE = 5;
-        private double NUM_XAXES_VALUES_SHOW = 4;
-        private double NUM_YAXES_VALUES_SHOW = 4;
 
-        private double xmin;
-        private double xmax;
+        private double viewMin;
+        private double viewMax;
 
+        private double graphMin;
+        private double graphMax;
+
+        private int NUM_POINTS = 100;
 
         private Func<double, double> mapXToGraph;
         private Func<double, double> mapYToGraph;
@@ -67,6 +69,7 @@ namespace PQM.Models
         {
             setAxesLines();
             setAxesTicks();
+            setAxesLabels();
         }
 
         private void clearCurves()
@@ -85,8 +88,10 @@ namespace PQM.Models
         public void plotGraph(Graph graph)
         {
             this.graph = graph;
-            this.xmin = 0;
-            this.xmax = graph.maxX;
+            viewMin = 0;
+            viewMax = graph.maxX;
+            graphMin = 0;
+            graphMax = graph.maxX;
             plotGraph();
         }
         private void plotGraph()
@@ -104,14 +109,14 @@ namespace PQM.Models
         {
             RIGHT_X = canvas.ActualWidth - 50;
             TOP_Y = canvas.ActualHeight - 50;
-            mapXToGraph = (x) => (x * (RIGHT_X - LEFT_X)) / (xmax - xmin) + LEFT_X;
+            mapXToGraph = (x) => (x * (RIGHT_X - LEFT_X)) / (viewMax - viewMin) + LEFT_X;
             mapYToGraph = (y) => (y * (TOP_Y - BOTTOM_Y)) / 100.0 + BOTTOM_Y;
         }
 
         public void setDomain(double xmin, double xmax)
         {
-            this.xmin = xmin;
-            this.xmax = xmax;
+            viewMin = xmin;
+            viewMax = xmax;
             plotGraph();
         }
 
@@ -144,12 +149,11 @@ namespace PQM.Models
             }
         }
 
-        private int NUM_POINTS = 100;
 
         private void plotStructure(Structure structure)
         {
-            double x1 = xmin;
-            double dx = (xmax - xmin) / NUM_POINTS;
+            double x1 = viewMin;
+            double dx = (viewMax - viewMin) / NUM_POINTS;
             double x2 = x1 + dx;
 
             double y1, y2;
@@ -173,6 +177,25 @@ namespace PQM.Models
 
                 x1 = x2;
                 x2 = x2 + dx;
+
+            }
+        }
+
+        private void setAxesLabels()
+        {
+            double x = viewMin;
+            double dx = (viewMax - viewMin) / NUM_XAXES_TICKS;
+            
+            for(int i = 0; i < NUM_XAXES_TICKS; i++)
+            {
+                TextBlock textblock = new TextBlock();
+                textblock.Text = x.ToString();
+                textblock.Foreground = axesColor;
+                textblock.FontSize = 10;
+
+                canvas.Children.Add(textblock);
+                Canvas.SetLeft(textblock, mapXToGraph(x));
+                Canvas.SetTop(textblock, BOTTOM_Y);
 
             }
         }
