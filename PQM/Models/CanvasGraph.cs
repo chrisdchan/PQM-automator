@@ -17,6 +17,7 @@ namespace PQM.Models
 
         private Graph graph;
         private Line[][] curves;
+        private TextBlock[] axesLabels;
 
         private SolidColorBrush axesColor = new SolidColorBrush(Colors.Black);
 
@@ -25,8 +26,11 @@ namespace PQM.Models
         private double RIGHT_X;
         private double TOP_Y;
 
-        private double NUM_XAXES_TICKS = 10;
-        private double NUM_YAXES_TICKS = 10;
+        private int NUM_XAXES_TICKS = 5;
+        private int NUM_YAXES_TICKS = 5;
+
+        private int XAXES_MARGIN = 10;
+        private int YAXES_MARGIN = 25;
 
         private double AXES_TICK_SIZE = 5;
 
@@ -44,6 +48,7 @@ namespace PQM.Models
         public CanvasGraph()
         {
             canvas = new Canvas();
+            axesLabels = new TextBlock[NUM_XAXES_TICKS + NUM_YAXES_TICKS];
             initCanvas();
         }
         private void initCanvas()
@@ -62,6 +67,7 @@ namespace PQM.Models
         public void onLoad()
         {
             setDimensions();
+            initAxesLabels();
             setGraph();
         }
 
@@ -69,7 +75,6 @@ namespace PQM.Models
         {
             setAxesLines();
             setAxesTicks();
-            setAxesLabels();
         }
 
         private void clearCurves()
@@ -92,9 +97,12 @@ namespace PQM.Models
             viewMax = graph.maxX;
             graphMin = 0;
             graphMax = graph.maxX;
-            plotGraph();
+
+            setAxesLabels();
+
+            plotStructures();
         }
-        private void plotGraph()
+        private void plotStructures()
         {
             clearCurves();
             curves = new Line[graph.structures.Count][];
@@ -117,7 +125,8 @@ namespace PQM.Models
         {
             viewMin = xmin;
             viewMax = xmax;
-            plotGraph();
+            plotStructures();
+            setAxesLabels();
         }
 
         private void setAxesLines()
@@ -130,7 +139,7 @@ namespace PQM.Models
 
         private void setAxesTicks()
         {
-            double dx = (double) (RIGHT_X - LEFT_X) / NUM_XAXES_TICKS;
+            double dx = (double) (RIGHT_X - LEFT_X) / (NUM_XAXES_TICKS - 1);
             double x = LEFT_X + dx;
             for(int i = 0; i < NUM_XAXES_TICKS; i++)
             {
@@ -139,7 +148,7 @@ namespace PQM.Models
                 x += dx;
             }
 
-            double dy = (double)(TOP_Y - BOTTOM_Y) / NUM_YAXES_TICKS;
+            double dy = (double)(TOP_Y - BOTTOM_Y) / (NUM_YAXES_TICKS - 1);
             double y = BOTTOM_Y + dy;
             for(int i = 0; i < NUM_YAXES_TICKS; i++)
             {
@@ -181,55 +190,124 @@ namespace PQM.Models
             }
         }
 
-        private void setAxesLabels()
+        private void initAxesLabels()
         {
-            double x = viewMin;
-            double dx = (viewMax - viewMin) / NUM_XAXES_TICKS;
-            
+            double x_canvas = LEFT_X;
+            double dx_canvas = (RIGHT_X - LEFT_X) / (NUM_XAXES_TICKS - 1);
+
+            axesLabels = new TextBlock[NUM_XAXES_TICKS + NUM_YAXES_TICKS];
+
             for(int i = 0; i < NUM_XAXES_TICKS; i++)
             {
-                TextBlock textblock = new TextBlock();
-                textblock.Text = x.ToString();
-                textblock.Foreground = axesColor;
-                textblock.FontSize = 10;
+                TextBlock textblock = createTextBlock();
 
                 canvas.Children.Add(textblock);
-                Canvas.SetLeft(textblock, mapXToGraph(x));
-                Canvas.SetTop(textblock, BOTTOM_Y);
+                Canvas.SetLeft(textblock, x_canvas);
+                Canvas.SetTop(textblock, BOTTOM_Y - XAXES_MARGIN);
 
+                axesLabels[i] = textblock;
+
+                x_canvas += dx_canvas;
             }
-        }
 
-        private int indexOfXValue(double x, List<Point> curve)
-        {
-            if (x == 0) return 0;
-            if(x == curve[curve.Count - 1].X) return curve.Count - 1;
+            double y_canvas = BOTTOM_Y;
+            double dy_canvas = (TOP_Y - BOTTOM_Y) / (NUM_YAXES_TICKS - 1);
 
-            int ind = (curve.Count / 2) - 1;
-
-            int start = 0;
-            int end = curve.Count - 2;
-
-            double left = curve[ind].X;
-            double right = curve[ind + 1].X;
-
-            while(left - x > 0.01 || x - right > 0.01)
+            for(int i = 0; i < NUM_YAXES_TICKS; i++)
             {
-                if(x < curve[ind].X)
-                {
-                    end = ind;
-                }
-                else
-                {
-                    start = ind + 1;
-                }
+                TextBlock textblock = createTextBlock();
 
-                ind = (start + end) / 2 - 1;
-                left = curve[ind].X;
-                right = curve[ind + 1].X;
+                canvas.Children.Add(textblock);
+                Canvas.SetLeft(textblock, LEFT_X - YAXES_MARGIN);
+                Canvas.SetTop(textblock, y_canvas);
+
+                axesLabels[NUM_XAXES_TICKS + i] = textblock;
+                y_canvas += dy_canvas;
             }
-            return ind;
         }
+
+        private TextBlock createTextBlock()
+        {
+            TextBlock textblock = new TextBlock();
+            textblock.Foreground = axesColor;
+            textblock.FontSize = 10;
+            textblock.RenderTransform = new ScaleTransform(1, -1);
+
+            return textblock;
+        }
+
+        private void setAxesLabels()
+        {
+            double x_graph = viewMin;
+            double dx_graph = (viewMax - viewMin) / (NUM_XAXES_TICKS - 1);
+
+            for(int i = 0; i < NUM_XAXES_TICKS; i++)
+            {
+                axesLabels[i].Text = x_graph.ToString();
+                x_graph += dx_graph;
+            }
+
+            double y_graph = 0;
+            double dy_graph = 100 / (NUM_YAXES_TICKS - 1);
+
+            for(int i = 0; i < NUM_YAXES_TICKS; i++)
+            {
+                if (y_graph != 0)
+                {
+                    axesLabels[i + NUM_XAXES_TICKS].Text = y_graph.ToString();
+                }
+                y_graph += dy_graph;
+            }
+
+        }
+
+        public Canvas generateExport()
+        {
+            Canvas exportCanvas = WPFCanvasCopier.Clone(canvas);
+
+            int NUM_STRUCTURES_PER_COL = 50;
+
+            double BLOCK_HEIGHT = 30;
+            double RECT_SIDE = 25;
+
+            int cols = (int)Math.Ceiling((double)graph.structures.Count / NUM_STRUCTURES_PER_COL);
+            exportCanvas.Width = canvas.ActualWidth + cols * 100;
+            exportCanvas.Height = canvas.ActualHeight;
+
+            for(int col = 0; col < cols; col++)
+            {
+                for(int i = 0; i < NUM_STRUCTURES_PER_COL; i++)
+                {
+                    int structInd = (col + 1) * i;
+                    if (structInd > graph.structures.Count - 1) break;
+
+                    TextBlock textblock = new TextBlock();
+                    Structure structure = graph.structures[structInd];
+
+                    textblock.Text = structure.name;
+
+                    Rectangle rect = new Rectangle();
+                    rect.Fill = structure.color;
+                    rect.Height = RECT_SIDE;
+                    rect.Width = RECT_SIDE;
+
+                    exportCanvas.Children.Add(textblock);
+
+                    Canvas.SetLeft(textblock, RIGHT_X + col * 100 + RECT_SIDE);
+                    Canvas.SetTop(textblock, TOP_Y - i * BLOCK_HEIGHT);
+
+
+                    exportCanvas.Children.Add(rect);
+
+                    Canvas.SetLeft(rect, RIGHT_X + col * 100);
+                    Canvas.SetTop(rect, TOP_Y - i * BLOCK_HEIGHT);
+                }
+            }
+
+            return exportCanvas;
+        }
+
+
         private Line createLine(double x1, double y1, double x2, double y2, SolidColorBrush color)
         {
             Line line = new Line();

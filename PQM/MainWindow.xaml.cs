@@ -529,27 +529,33 @@ namespace PQM
 
         private void exportBtn_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.MessageBox.Show("Yuh");
-        }
+            Canvas canvas = canvasGraph.generateExport();
 
-        private void SaveToPng(FrameworkElement visual, string fileName)
-        {
-            var encoder = new PngBitmapEncoder();
-            EncodeVisual(visual, fileName, encoder);
-        }
+            int width = (int)canvas.Width;
+            int height = (int)canvas.Height;
 
-        private static void EncodeVisual(FrameworkElement visual, string fileName, BitmapEncoder encoder)
-        {
-            var bitmap = new RenderTargetBitmap((int)visual.ActualWidth, (int)visual.ActualHeight, 70, 70, PixelFormats.Pbgra32);
-            bitmap.Render(visual);
-            var frame = BitmapFrame.Create(bitmap);
-            encoder.Frames.Add(frame);
+            double dpi = 100;
+
+            RenderTargetBitmap bmp = new RenderTargetBitmap(width * 4, height * 4, dpi, dpi, PixelFormats.Default);
+            bmp.Render(canvas);
+
+            PngBitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmp));
+
             System.Windows.Forms.SaveFileDialog fdlg = new System.Windows.Forms.SaveFileDialog();
-            fdlg.FileName = fileName;
+            fdlg.Filter = "png Files (*.png)|*.png";
+            fdlg.DefaultExt = "png";
             fdlg.ShowDialog();
-            using (var stream = File.Create(fdlg.FileName)) encoder.Save(stream);
-        }
 
+
+            if(fdlg.FileName != "")
+            {
+                using (var stream = System.IO.File.Create(fdlg.FileName))
+                {
+                    encoder.Save(stream);
+                }
+            }
+        }
         private void selectbtn_Click(object sender, RoutedEventArgs e)
         {
             foreach(Series series in SeriesCollection)
