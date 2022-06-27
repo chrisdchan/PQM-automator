@@ -183,7 +183,7 @@ namespace PQM
             }
             else if(graph.metric == "E-field")
             {
-                xtitle = "Electric Field Density (V/m)";
+                xtitle = "Electric Field Densit (V/m)";
                 graphTitle = "Electic Field Density";
             }
 
@@ -509,7 +509,6 @@ namespace PQM
             {
                 interpYoutput.Text = String.Empty;
             }
-
         }
 
 
@@ -536,7 +535,7 @@ namespace PQM
 
             double dpi = 100;
 
-            RenderTargetBitmap bmp = new RenderTargetBitmap(width * 4, height * 4, dpi, dpi, PixelFormats.Default);
+            RenderTargetBitmap bmp = new RenderTargetBitmap(width, height, dpi, dpi, PixelFormats.Default);
             bmp.Render(canvas);
 
             PngBitmapEncoder encoder = new PngBitmapEncoder();

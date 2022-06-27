@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:PQM" xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" xmlns:oxy="http://oxyplot.org/wpf" xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="MainWindow" Height="750" Width="1000">
-    <Grid Background="#EFDFFC" x:Name="mainGrid">
+    <Grid Background="#DDE3FF" x:Name="mainGrid">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="160"/>
             <ColumnDefinition Width="2.25*"/>

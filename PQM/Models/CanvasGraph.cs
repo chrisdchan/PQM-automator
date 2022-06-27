@@ -17,7 +17,8 @@ namespace PQM.Models
 
         private Graph graph;
         private Line[][] curves;
-        private TextBlock[] axesLabels;
+        private TextBlock[] axesValues;
+        private (TextBlock title, TextBlock x, TextBlock y) graphLabels;
 
         private SolidColorBrush axesColor = new SolidColorBrush(Colors.Black);
 
@@ -48,7 +49,7 @@ namespace PQM.Models
         public CanvasGraph()
         {
             canvas = new Canvas();
-            axesLabels = new TextBlock[NUM_XAXES_TICKS + NUM_YAXES_TICKS];
+            axesValues = new TextBlock[NUM_XAXES_TICKS + NUM_YAXES_TICKS];
             initCanvas();
         }
         private void initCanvas()
@@ -67,14 +68,16 @@ namespace PQM.Models
         public void onLoad()
         {
             setDimensions();
-            initAxesLabels();
-            setGraph();
+            initAxesValues();
+            initGraphLabels();
         }
 
         private void setGraph()
         {
             setAxesLines();
             setAxesTicks();
+            setGraphLabels();
+            setAxesValues();
         }
 
         private void clearCurves()
@@ -98,9 +101,8 @@ namespace PQM.Models
             graphMin = 0;
             graphMax = graph.maxX;
 
-            setAxesLabels();
-
             plotStructures();
+            setGraph();
         }
         private void plotStructures()
         {
@@ -126,7 +128,6 @@ namespace PQM.Models
             viewMin = xmin;
             viewMax = xmax;
             plotStructures();
-            setAxesLabels();
         }
 
         private void setAxesLines()
@@ -156,6 +157,69 @@ namespace PQM.Models
                 canvas.Children.Add(line);
                 y += dy;
             }
+        }
+
+        private void initGraphLabels()
+        {
+            double AXES_MARGIN = 10;
+            double TITLE_OFFSET = 10;
+            
+            graphLabels = (new TextBlock(), new TextBlock(), new TextBlock());
+
+            graphLabels.x.FontSize = 12;
+            graphLabels.y.FontSize = 12;
+            graphLabels.title.FontSize = 18;
+
+            graphLabels.y.LayoutTransform = new RotateTransform(270);
+
+            canvas.Children.Add(graphLabels.x);
+            canvas.Children.Add(graphLabels.y);
+            canvas.Children.Add(graphLabels.title);
+
+            Canvas.SetLeft(graphLabels.x, (RIGHT_X + LEFT_X) / 2.0);
+            Canvas.SetTop(graphLabels.x, AXES_MARGIN);
+
+            Canvas.SetLeft(graphLabels.y, AXES_MARGIN);
+            Canvas.SetTop(graphLabels.y, (TOP_Y + BOTTOM_Y) / 2.0);
+
+            Canvas.SetLeft(graphLabels.title, (RIGHT_X + LEFT_X) / 2.0);
+            Canvas.SetLeft(graphLabels.title, TOP_Y + TITLE_OFFSET);
+
+        }
+
+        private void setGraphLabels()
+        {
+            (String title, String xtitle, String ytitle) = getGraphLabels();
+
+            graphLabels.x.Text = xtitle;
+            graphLabels.y.Text = ytitle;
+            graphLabels.title.Text = title;
+        }
+
+        private (String title, String xAxes, String yAxes) getGraphLabels()
+        {
+            String xtitle = "";
+            String graphTitle = "";
+            String ytitle = "Percent Normalized Volume (%)";
+
+            if(graph.metric == "CD")
+            {
+                xtitle = "Current Density (A/m^2)";
+                graphTitle = "Current Denisty";
+
+            }
+            else if(graph.metric == "SAR")
+            {
+                xtitle = "SAR (W/kg)";
+                graphTitle = "Specific Absorbance Rate";
+            }
+            else if(graph.metric == "E-field")
+            {
+                xtitle = "Electric Field Density (V/m)";
+                graphTitle = "Electic Field Density";
+            }
+
+            return (graphTitle, xtitle, ytitle);
         }
 
 
@@ -190,12 +254,12 @@ namespace PQM.Models
             }
         }
 
-        private void initAxesLabels()
+        private void initAxesValues()
         {
             double x_canvas = LEFT_X;
             double dx_canvas = (RIGHT_X - LEFT_X) / (NUM_XAXES_TICKS - 1);
 
-            axesLabels = new TextBlock[NUM_XAXES_TICKS + NUM_YAXES_TICKS];
+            axesValues = new TextBlock[NUM_XAXES_TICKS + NUM_YAXES_TICKS];
 
             for(int i = 0; i < NUM_XAXES_TICKS; i++)
             {
@@ -205,7 +269,7 @@ namespace PQM.Models
                 Canvas.SetLeft(textblock, x_canvas);
                 Canvas.SetTop(textblock, BOTTOM_Y - XAXES_MARGIN);
 
-                axesLabels[i] = textblock;
+                axesValues[i] = textblock;
 
                 x_canvas += dx_canvas;
             }
@@ -221,7 +285,7 @@ namespace PQM.Models
                 Canvas.SetLeft(textblock, LEFT_X - YAXES_MARGIN);
                 Canvas.SetTop(textblock, y_canvas);
 
-                axesLabels[NUM_XAXES_TICKS + i] = textblock;
+                axesValues[NUM_XAXES_TICKS + i] = textblock;
                 y_canvas += dy_canvas;
             }
         }
@@ -236,14 +300,14 @@ namespace PQM.Models
             return textblock;
         }
 
-        private void setAxesLabels()
+        private void setAxesValues()
         {
             double x_graph = viewMin;
             double dx_graph = (viewMax - viewMin) / (NUM_XAXES_TICKS - 1);
 
             for(int i = 0; i < NUM_XAXES_TICKS; i++)
             {
-                axesLabels[i].Text = x_graph.ToString();
+                axesValues[i].Text = x_graph.ToString();
                 x_graph += dx_graph;
             }
 
@@ -254,11 +318,10 @@ namespace PQM.Models
             {
                 if (y_graph != 0)
                 {
-                    axesLabels[i + NUM_XAXES_TICKS].Text = y_graph.ToString();
+                    axesValues[i + NUM_XAXES_TICKS].Text = y_graph.ToString();
                 }
                 y_graph += dy_graph;
             }
-
         }
 
         public Canvas generateExport()
