@@ -153,53 +153,6 @@ namespace PQM
             }
         }
 
-        private void plotGraph(Graph graph)
-        {
-            removeAllSeries();
-
-            Labels = new string[] { "1", "2", "3" };
-            Formatter = value => value.ToString("N");
-
-            DataContext = this;
-
-            structuresSP.Children.Clear();
-            addLegends(graph);
-            setRawVisibility(false);
-
-            string xtitle = "";
-            string graphTitle = "";
-
-            if(graph.metric == "CD")
-            {
-                xtitle = "Current Density (A/m^2)";
-                graphTitle = "Current Denisty";
-            updateInterpY();
-
-            }
-            else if(graph.metric == "SAR")
-            {
-                xtitle = "SAR (W/kg)";
-                graphTitle = "Specific Absorbance Rate";
-            }
-            else if(graph.metric == "E-field")
-            {
-                xtitle = "Electric Field Densit (V/m)";
-                graphTitle = "Electic Field Density";
-            }
-
-            graphTitleLabel.Content = graphTitle;
-
-            setXMinTxt.Text = "0";
-            setXMaxTxt.Text = graph.maxX.ToString();
-
-            setVisibiilityStructMetrics(false);
-            myGraph = graph;
-            xmin = 0;
-            xmax = graph.maxX;
-                 
-
-        }
-
         private void applyXrangeBtn_Click(object sender, RoutedEventArgs e)
         {
             double minX;

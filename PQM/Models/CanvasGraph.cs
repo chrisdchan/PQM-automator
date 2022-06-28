@@ -21,6 +21,7 @@ namespace PQM.Models
         private (TextBlock title, TextBlock x, TextBlock y) graphLabels;
 
         private SolidColorBrush axesColor = new SolidColorBrush(Colors.Black);
+        private ScaleTransform scaleTransform = new ScaleTransform(1, -1);
 
         private double LEFT_X = 50;
         private double BOTTOM_Y = 50;
@@ -37,9 +38,6 @@ namespace PQM.Models
 
         private double viewMin;
         private double viewMax;
-
-        private double graphMin;
-        private double graphMax;
 
         private int NUM_POINTS = 100;
 
@@ -62,7 +60,7 @@ namespace PQM.Models
             Grid.SetColumnSpan(canvas, 2);
 
             canvas.Background = new SolidColorBrush(Colors.White);
-            canvas.LayoutTransform = new ScaleTransform(1, -1);
+            canvas.LayoutTransform = scaleTransform;
         }
 
         public void onLoad()
@@ -98,8 +96,6 @@ namespace PQM.Models
             this.graph = graph;
             viewMin = 0;
             viewMax = graph.maxX;
-            graphMin = 0;
-            graphMax = graph.maxX;
 
             plotStructures();
             setGraph();
@@ -161,30 +157,29 @@ namespace PQM.Models
 
         private void initGraphLabels()
         {
-            double AXES_MARGIN = 10;
-            double TITLE_OFFSET = 10;
-            
             graphLabels = (new TextBlock(), new TextBlock(), new TextBlock());
 
-            graphLabels.x.FontSize = 12;
-            graphLabels.y.FontSize = 12;
-            graphLabels.title.FontSize = 18;
+            SolidColorBrush testColor = new SolidColorBrush(Colors.LightPink);
 
+            graphLabels.x.FontSize = 12;
+            graphLabels.x.RenderTransform = scaleTransform;
+            graphLabels.x.Background = testColor;
+            graphLabels.x.SizeChanged += graphLabelsSizeChanged;
+
+            graphLabels.y.FontSize = 12;
+            graphLabels.y.RenderTransform = scaleTransform;
             graphLabels.y.LayoutTransform = new RotateTransform(270);
+            graphLabels.y.Background = testColor;
+            graphLabels.y.SizeChanged += graphLabelsSizeChanged;
+
+            graphLabels.title.FontSize = 18;
+            graphLabels.title.RenderTransform = scaleTransform;
+            graphLabels.title.Background = testColor;
+            graphLabels.title.SizeChanged += graphLabelsSizeChanged;
 
             canvas.Children.Add(graphLabels.x);
             canvas.Children.Add(graphLabels.y);
             canvas.Children.Add(graphLabels.title);
-
-            Canvas.SetLeft(graphLabels.x, (RIGHT_X + LEFT_X) / 2.0);
-            Canvas.SetTop(graphLabels.x, AXES_MARGIN);
-
-            Canvas.SetLeft(graphLabels.y, AXES_MARGIN);
-            Canvas.SetTop(graphLabels.y, (TOP_Y + BOTTOM_Y) / 2.0);
-
-            Canvas.SetLeft(graphLabels.title, (RIGHT_X + LEFT_X) / 2.0);
-            Canvas.SetLeft(graphLabels.title, TOP_Y + TITLE_OFFSET);
-
         }
 
         private void setGraphLabels()
@@ -194,6 +189,32 @@ namespace PQM.Models
             graphLabels.x.Text = xtitle;
             graphLabels.y.Text = ytitle;
             graphLabels.title.Text = title;
+        }
+
+        private void graphLabelsSizeChanged(object sender, RoutedEventArgs e)
+        {
+            double AXES_MARGIN_X = 30;
+            double AXES_MARGIN_Y = 45;
+            double TITLE_OFFSET = 10;
+
+            double xAxesSetLeft = (RIGHT_X + LEFT_X) / 2.0 - graphLabels.x.ActualWidth / 2.0;
+            double xAxesSetTop = BOTTOM_Y - AXES_MARGIN_X;
+
+            double yAxesSetTop = (TOP_Y + BOTTOM_Y) / 2.0 + graphLabels.y.ActualHeight / 2.0;
+            double yAxesSetLeft = LEFT_X - AXES_MARGIN_Y;
+
+            double titleSetLeft = (RIGHT_X + LEFT_X) / 2.0 - graphLabels.title.ActualWidth / 2.0;
+            double titleSetTop = TOP_Y + TITLE_OFFSET + graphLabels.title.ActualHeight; 
+
+            Canvas.SetLeft(graphLabels.x, xAxesSetLeft);
+            Canvas.SetTop(graphLabels.x, xAxesSetTop);
+
+            Canvas.SetLeft(graphLabels.y, yAxesSetLeft);
+            Canvas.SetTop(graphLabels.y, yAxesSetTop);
+
+            Canvas.SetLeft(graphLabels.title, titleSetLeft);
+            Canvas.SetTop(graphLabels.title, titleSetTop);
+
         }
 
         private (String title, String xAxes, String yAxes) getGraphLabels()
@@ -295,8 +316,7 @@ namespace PQM.Models
             TextBlock textblock = new TextBlock();
             textblock.Foreground = axesColor;
             textblock.FontSize = 10;
-            textblock.RenderTransform = new ScaleTransform(1, -1);
-
+            textblock.RenderTransform = scaleTransform;
             return textblock;
         }
 
