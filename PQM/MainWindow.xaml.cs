@@ -27,29 +27,25 @@ using System.Runtime.CompilerServices;
 
 namespace PQM
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : INotifyPropertyChanged
     {
-        private Graph myGraph { get; set; }
+        private Graph graph { get; set; }
         private Structure selectedStructure { get; set; }
-        public SeriesCollection SeriesCollection { get;  set; }
 
         private double xmin = 0;
         private double xmax = 100;
 
         public static Grid grid { get; set; }
+
+        public Boolean[] curvesDisplayed { get; set; }
         
         public Func<double, string> Formatter { get; set; }
         public string[] Labels { get; set; }
 
         public CanvasGraph canvasGraph;
-
         public MainWindow()
         {
             InitializeComponent();
-            SeriesCollection = new SeriesCollection { };
 
             setVisibiilityStructMetrics(false);
 
@@ -102,8 +98,8 @@ namespace PQM
                     }
                     i++;
                 }
-                myGraph = new Graph(metric, myStructures);
-                canvasGraph.plotGraph(myGraph);
+                graph = new Graph(metric, myStructures);
+                plotGraph();
             }
         }
 
@@ -139,18 +135,27 @@ namespace PQM
                         }
                         i++;
                     }
-                    myGraph = new Graph(metric, myStructures);
-                    canvasGraph.plotGraph(myGraph);
+                    graph = new Graph(metric, myStructures);
+                    plotGraph();
                 }
             }
         }
 
-        private void removeAllSeries()
+        private void plotGraph()
         {
-            foreach(Series series in SeriesCollection)
+            canvasGraph.plotGraph(graph);
+            addLegends();
+            initCurvesDisplayed();
+        }
+
+        private void initCurvesDisplayed()
+        {
+            curvesDisplayed = new Boolean[graph.structures.Count];
+            for(int i = 0; i < graph.structures.Count; i++)
             {
-                SeriesCollection.Remove(series);
+                curvesDisplayed[i] = true;
             }
+
         }
 
         private void applyXrangeBtn_Click(object sender, RoutedEventArgs e)
@@ -164,7 +169,7 @@ namespace PQM
                 xmax = maxX;
 
                 double range = xmax - xmin;
-                double freeSpace = myGraph.maxX - range;
+                double freeSpace = graph.maxX - range;
 
                 if(freeSpace == 0)
                 {
@@ -186,34 +191,16 @@ namespace PQM
         
         private void showRaw_Checked(object sender, RoutedEventArgs e)
         {
-            setRawVisibility(true);
+
         }
         private void showRaw_Unchecked(object sender, RoutedEventArgs e)
         {
-            setRawVisibility(false);
+
         }
 
-        private void setRawVisibility(Boolean visible)
+        private void addLegends()
         {
-            foreach(Series series in SeriesCollection)
-            {
-                if(series.GetType() == typeof(ScatterSeries))
-                {
-                    if(visible)
-                    {
-                        series.Visibility = Visibility.Visible;
-                    }
-                    else
-                    {
-                        series.Visibility = Visibility.Hidden;
-                    }
-                }
-            }
-        }
 
-
-        private void addLegends(Graph graph)
-        {
             int i = 0;
             foreach(Structure structure in graph.structures)
             {
@@ -252,7 +239,6 @@ namespace PQM
                 i++;
             }
         }
-
         private void structureCheckedChanged(object sender, RoutedEventArgs e)
         {
             DependencyObject dpobj = sender as DependencyObject;
@@ -266,24 +252,18 @@ namespace PQM
 
             if (ischecked == null) throw new Exception("It's null");
 
-            LineSeries s = SeriesCollection[ind] as LineSeries;
-
-            if(s != null)
+            if((bool)ischecked)
             {
-                if((Boolean)ischecked)
-                {
-                    s.Visibility = Visibility.Visible;
-                    //s.Stroke = Brushes.Black; 
-                }
-                else
-                {
-                    //s.Stroke = Brushes.White;
-                    s.Visibility = Visibility.Hidden;
-                }
+                canvasGraph.addCurve(ind);
+                curvesDisplayed[ind] = true;
+            }
+            else
+            {
+                canvasGraph.removeCurve(ind);
+                curvesDisplayed[ind] = false;
             }
 
         }
-
 
         private (int, string) getStructureInd(object sender)
         {
@@ -304,7 +284,7 @@ namespace PQM
         {
             (int ind, string name) = getStructureInd(sender);
 
-            selectedStructure = myGraph.structures[ind];
+            selectedStructure = graph.structures[ind];
 
             if (lastSelectedLbl != null)
             {
@@ -464,13 +444,35 @@ namespace PQM
             }
         }
 
+        private void selectbtn_Click(object sender, RoutedEventArgs e)
+        {
+            for(int i = 0; i < curvesDisplayed.Length; i++)
+            {
+                if(!curvesDisplayed[i])
+                {
+                    canvasGraph.addCurve(i);
+                    curvesDisplayed[i] = true;
+                }
+            }
 
+            foreach(StackPanel sp in structuresSP.Children)
+            {
+                CheckBox chk = sp.Children[0] as CheckBox;
+                chk.IsChecked = true;
+            }
+
+        }
         private void deselectbtn_Click(object sender, RoutedEventArgs e)
         {
-            foreach(Series series in SeriesCollection)
+            for(int i = 0; i < curvesDisplayed.Length; i++)
             {
-                series.Visibility = Visibility.Hidden;
+                if(curvesDisplayed[i])
+                {
+                    canvasGraph.removeCurve(i);
+                    curvesDisplayed[i] = false;
+                }
             }
+
 
             foreach(StackPanel sp in structuresSP.Children)
             {
@@ -508,20 +510,6 @@ namespace PQM
                 }
             }
         }
-        private void selectbtn_Click(object sender, RoutedEventArgs e)
-        {
-            foreach(Series series in SeriesCollection)
-            {
-                series.Visibility = Visibility.Visible;
-            }
-
-            foreach(StackPanel sp in structuresSP.Children)
-            {
-                CheckBox chk = sp.Children[0] as CheckBox;
-                chk.IsChecked = true;
-            }
-
-        }
 
         private void setColor_btn_Click(object sender, RoutedEventArgs e)
         {
@@ -533,11 +521,7 @@ namespace PQM
 
             int id = selectedStructure.id;
 
-
-            // Updater Color on Graph
-
-            LineSeries ls = SeriesCollection[id] as LineSeries;
-            ls.Stroke = newColorBrush;
+            canvasGraph.changeCurveColor(id, newColorBrush);
 
             // Update Color on legend
             StackPanel innerSP = structuresSP.Children[id] as StackPanel;
@@ -549,7 +533,7 @@ namespace PQM
         private void xPosSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             double range = xmax - xmin;
-            double freeSpace = myGraph.maxX - range;
+            double freeSpace = graph.maxX - range;
             double val = xPosSlider.Value;
         }
     }

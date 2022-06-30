@@ -23,7 +23,7 @@ namespace PQM.Models
         private SolidColorBrush axesColor = new SolidColorBrush(Colors.Black);
         private ScaleTransform scaleTransform = new ScaleTransform(1, -1);
 
-        private double LEFT_X = 50;
+        private double LEFT_X = 60;
         private double BOTTOM_Y = 50;
         private double RIGHT_X;
         private double TOP_Y;
@@ -97,17 +97,17 @@ namespace PQM.Models
             viewMin = 0;
             viewMax = graph.maxX;
 
-            plotStructures();
+            initStructureCurves();
             setGraph();
         }
-        private void plotStructures()
+        private void initStructureCurves()
         {
             clearCurves();
             curves = new Line[graph.structures.Count][];
             
             foreach(Structure structure in graph.structures)
             {
-                plotStructure(structure);
+                initStructureCurve(structure);
             }
         }
 
@@ -123,7 +123,8 @@ namespace PQM.Models
         {
             viewMin = xmin;
             viewMax = xmax;
-            plotStructures();
+            initStructureCurves();
+            setAxesValues();
         }
 
         private void setAxesLines()
@@ -159,22 +160,18 @@ namespace PQM.Models
         {
             graphLabels = (new TextBlock(), new TextBlock(), new TextBlock());
 
-            SolidColorBrush testColor = new SolidColorBrush(Colors.LightPink);
 
             graphLabels.x.FontSize = 12;
             graphLabels.x.RenderTransform = scaleTransform;
-            graphLabels.x.Background = testColor;
             graphLabels.x.SizeChanged += graphLabelsSizeChanged;
 
             graphLabels.y.FontSize = 12;
             graphLabels.y.RenderTransform = scaleTransform;
             graphLabels.y.LayoutTransform = new RotateTransform(270);
-            graphLabels.y.Background = testColor;
             graphLabels.y.SizeChanged += graphLabelsSizeChanged;
 
             graphLabels.title.FontSize = 18;
             graphLabels.title.RenderTransform = scaleTransform;
-            graphLabels.title.Background = testColor;
             graphLabels.title.SizeChanged += graphLabelsSizeChanged;
 
             canvas.Children.Add(graphLabels.x);
@@ -193,15 +190,15 @@ namespace PQM.Models
 
         private void graphLabelsSizeChanged(object sender, RoutedEventArgs e)
         {
-            double AXES_MARGIN_X = 30;
-            double AXES_MARGIN_Y = 45;
+            double AXES_DIST_FROM_X = 30;
+            double AXES_DIST_FROM_Y = 55;
             double TITLE_OFFSET = 10;
 
             double xAxesSetLeft = (RIGHT_X + LEFT_X) / 2.0 - graphLabels.x.ActualWidth / 2.0;
-            double xAxesSetTop = BOTTOM_Y - AXES_MARGIN_X;
+            double xAxesSetTop = BOTTOM_Y - AXES_DIST_FROM_X;
 
-            double yAxesSetTop = (TOP_Y + BOTTOM_Y) / 2.0 + graphLabels.y.ActualHeight / 2.0;
-            double yAxesSetLeft = LEFT_X - AXES_MARGIN_Y;
+            double yAxesSetTop = (TOP_Y + BOTTOM_Y) / 2.0 + graphLabels.y.ActualWidth / 2.0;
+            double yAxesSetLeft = LEFT_X - AXES_DIST_FROM_Y;
 
             double titleSetLeft = (RIGHT_X + LEFT_X) / 2.0 - graphLabels.title.ActualWidth / 2.0;
             double titleSetTop = TOP_Y + TITLE_OFFSET + graphLabels.title.ActualHeight; 
@@ -242,9 +239,7 @@ namespace PQM.Models
 
             return (graphTitle, xtitle, ytitle);
         }
-
-
-        private void plotStructure(Structure structure)
+        private void initStructureCurve(Structure structure)
         {
             double x1 = viewMin;
             double dx = (viewMax - viewMin) / NUM_POINTS;
@@ -341,6 +336,31 @@ namespace PQM.Models
                     axesValues[i + NUM_XAXES_TICKS].Text = y_graph.ToString();
                 }
                 y_graph += dy_graph;
+            }
+        }
+        public void removeCurve(int index)
+        {
+            if(!canvas.Children.Contains(curves[index][0])) throw new Exception("No work");
+            foreach(Line line in curves[index])
+            {
+                canvas.Children.Remove(line);
+            }
+        }
+
+        public void addCurve(int index)
+        {
+            if (canvas.Children.Contains(curves[index][0])) throw new Exception("Curve already there dummy");
+            foreach(Line line in curves[index])
+            {
+                canvas.Children.Add(line);
+            }
+        }
+
+        public void changeCurveColor(int index, SolidColorBrush color)
+        {
+            foreach(Line line in curves[index])
+            {
+                line.Stroke = color;
             }
         }
 

@@ -82,7 +82,6 @@ C:\Users\chris\Source\Repos\PQM-automator\PQM\bin\Debug\ro\Xceed.Wpf.AvalonDock.
 C:\Users\chris\Source\Repos\PQM-automator\PQM\bin\Debug\ru\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\chris\Source\Repos\PQM-automator\PQM\bin\Debug\sv\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\chris\Source\Repos\PQM-automator\PQM\bin\Debug\zh-Hans\Xceed.Wpf.AvalonDock.resources.dll
-C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.csproj.AssemblyReference.cache
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.csproj.SuggestedBindingRedirects.cache
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\MainWindow.g.cs
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\App.g.cs
@@ -96,3 +95,4 @@ C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.csproj.CoreCompileIn
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.csproj.CopyComplete
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.exe
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.pdb
+C:\Users\chris\source\repos\PQM-automator\PQM\obj\Debug\PQM.csproj.AssemblyReference.cache
