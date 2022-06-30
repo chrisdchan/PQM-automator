@@ -95,4 +95,10 @@ C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.csproj.CoreCompileIn
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.csproj.CopyComplete
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.exe
 C:\Users\chris\Source\Repos\PQM-automator\PQM\obj\Debug\PQM.pdb
-C:\Users\chris\source\repos\PQM-automator\PQM\obj\Debug\PQM.csproj.AssemblyReference.cache
+C:\Users\chris\source\repos\PQM-automator\PQM\obj\Debug\Views\GraphCustomize.g.cs
+C:\Users\chris\source\repos\PQM-automator\PQM\obj\Debug\Views\ParameterSearch.g.cs
+C:\Users\chris\source\repos\PQM-automator\PQM\obj\Debug\Views\ParameterTable.g.cs
+C:\Users\chris\source\repos\PQM-automator\PQM\obj\Debug\GeneratedInternalTypeHelper.g.cs
+C:\Users\chris\source\repos\PQM-automator\PQM\obj\Debug\Views\GraphCustomize.baml
+C:\Users\chris\source\repos\PQM-automator\PQM\obj\Debug\Views\ParameterSearch.baml
+C:\Users\chris\source\repos\PQM-automator\PQM\obj\Debug\Views\ParameterTable.baml
